@@ -71,6 +71,19 @@ inner join inventory i on i.film_id = f.film_id -- relación película - inventa
 inner join rental r on r.inventory_id = i.inventory_id -- relación inventario - alquiler
 group by c.name;
 
+select c.name as categoria, alquileres_categoria.recuento  -- con subconsulta
+from category c
+join (
+    select fc.category_id, count(r.rental_id) as recuento
+    from film_category fc
+    join film f on f.film_id = fc.film_id
+    join inventory i on i.film_id = f.film_id
+    join rental r on r.inventory_id = i.inventory_id
+    group by fc.category_id
+) alquileres_categoria
+    on c.category_id = alquileres_categoria.category_id;
+
+
 -- 12.- Encuentra el promedio de duración de las películas para cada clasificación de la tabla film y muestra la clasificación junto con el promedio de duración.
 select avg(film.length) as promedio, rating
 from film
@@ -84,6 +97,17 @@ inner join film_actor fa on fa.actor_id = a.actor_id -- saber en que película s
 inner join film f on fa.film_id = f.film_id   -- llegar al título
 where f.title = 'INDIAN LOVE';
 
+select first_name, last_name  -- con subconsulta
+from actor
+where actor_id in (     -- actor_id en la lista de actores (film_actor)
+	select actor_id
+    from film_actor
+    where film_id = (      -- de la película cuyo título es el buscado
+		select film_id
+        from film
+        where title = 'INDIAN LOVE'
+	)
+);
 -- 14.- Muestra el título de todas las películas que contengan la palabra "dog" o "cat" en su descripción.
 select title
 from film
