@@ -1,0 +1,1 @@
+CREATE DATABASE examen_apis;
